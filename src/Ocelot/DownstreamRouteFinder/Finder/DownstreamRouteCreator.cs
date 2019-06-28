@@ -32,8 +32,8 @@
                 downstreamPath = RemoveQueryString(downstreamPath);
             }
 
-            var downstreamPathForKeys = $"/{serviceName}{downstreamPath}";
-
+            ////var downstreamPathForKeys = $"/{serviceName}{downstreamPath}";
+            var downstreamPathForKeys = $"/{downstreamPath}";
             var loadBalancerKey = CreateLoadBalancerKey(downstreamPathForKeys, upstreamHttpMethod, configuration.LoadBalancerOptions);
 
             if (_cache.TryGetValue(loadBalancerKey, out var downstreamRoute))
@@ -102,8 +102,8 @@
                 return "/";
             }
 
-            return upstreamUrlPath
-                .Substring(upstreamUrlPath.IndexOf('/', 1));
+            return upstreamUrlPath.Substring(upstreamUrlPath.IndexOf('/', 0)).Replace("GateWay", "api");
+            ////return upstreamUrlPath.Substring(upstreamUrlPath.IndexOf('/', 1));
         }
 
         private static string GetServiceName(string upstreamUrlPath)
@@ -114,9 +114,7 @@
                     .Substring(1);
             }
 
-            return upstreamUrlPath
-                .Substring(1, upstreamUrlPath.IndexOf('/', 1))
-                .TrimEnd('/');
+            return upstreamUrlPath.Split('/')[2];
         }
 
         private string CreateLoadBalancerKey(string downstreamTemplatePath, string httpMethod, LoadBalancerOptions loadBalancerOptions)
