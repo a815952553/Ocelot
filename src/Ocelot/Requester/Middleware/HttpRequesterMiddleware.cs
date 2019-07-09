@@ -1,5 +1,8 @@
-using Ocelot.Logging;
+﻿using Ocelot.Logging;
 using Ocelot.Middleware;
+using Ocelot.Responses;
+using System.Diagnostics;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Ocelot.Requester.Middleware
@@ -20,7 +23,18 @@ namespace Ocelot.Requester.Middleware
 
         public async Task Invoke(DownstreamContext context)
         {
-            var response = await _requester.GetResponse(context);
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
+            Response<HttpResponseMessage> response = null;
+            try
+            {
+                response = await _requester.GetResponse(context);
+            }
+            finally
+            {
+                watch.Stop();
+                Logger.LogInformation($"GetResponse耗时：{watch.ElapsedMilliseconds}");
+            }
 
             if (response.IsError)
             {
@@ -35,6 +49,7 @@ namespace Ocelot.Requester.Middleware
             context.DownstreamResponse = new DownstreamResponse(response.Data);
 
             await _next.Invoke(context);
+
         }
     }
 }

@@ -33,7 +33,7 @@
             }
 
             ////var downstreamPathForKeys = $"/{serviceName}{downstreamPath}";
-            var downstreamPathForKeys = $"/{downstreamPath}";
+            var downstreamPathForKeys = $"{downstreamPath}";
             var loadBalancerKey = CreateLoadBalancerKey(downstreamPathForKeys, upstreamHttpMethod, configuration.LoadBalancerOptions);
 
             if (_cache.TryGetValue(loadBalancerKey, out var downstreamRoute))

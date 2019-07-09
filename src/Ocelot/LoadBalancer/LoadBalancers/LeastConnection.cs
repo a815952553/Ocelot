@@ -3,6 +3,7 @@ using Ocelot.Responses;
 using Ocelot.Values;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -24,6 +25,7 @@ namespace Ocelot.LoadBalancer.LoadBalancers
 
         public async Task<Response<ServiceHostAndPort>> Lease(DownstreamContext downstreamContext)
         {
+
             var services = await _services.Invoke();
 
             if (services == null)

@@ -1,7 +1,10 @@
 ﻿using Ocelot.LoadBalancer.LoadBalancers;
 using Ocelot.Logging;
 using Ocelot.Middleware;
+using Ocelot.Responses;
+using Ocelot.Values;
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Ocelot.LoadBalancer.Middleware
@@ -30,7 +33,19 @@ namespace Ocelot.LoadBalancer.Middleware
                 return;
             }
 
-            var hostAndPort = await loadBalancer.Data.Lease(context);
+            Response<ServiceHostAndPort> hostAndPort = null;
+            Stopwatch watch = new Stopwatch();
+            try
+            {
+                watch.Start();
+                hostAndPort = await loadBalancer.Data.Lease(context);
+            }
+            finally
+            {
+                watch.Stop();
+                Logger.LogInformation($"获取服务耗时:{watch.ElapsedMilliseconds}");
+            }
+            
             if (hostAndPort.IsError)
             {
                 Logger.LogDebug("there was an error leasing the loadbalancer, setting pipeline error");
